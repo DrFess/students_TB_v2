@@ -1,10 +1,12 @@
 import sqlite3
 
+from settings import PATH_TO_DB
+
 
 def connection_to_DB(func):
     """Декоратор - подключение к базе данных"""
     def wrapper(*args, **kwargs):
-        conn = sqlite3.connect('database/studentsDB.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        conn = sqlite3.connect(PATH_TO_DB, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 

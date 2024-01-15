@@ -6,7 +6,7 @@ from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from database.db import check_teacher, check_student
-from handlers import registration, moderation, create_db
+from handlers import registration, moderation, create_db, geolocation
 from keyboards import registration_kb
 from settings import TOKEN
 
@@ -49,7 +49,8 @@ async def main():
         router,
         registration.router,
         moderation.router,
-        create_db.router
+        create_db.router,
+        geolocation.router,
     )
 
     await bot.delete_webhook(drop_pending_updates=True)

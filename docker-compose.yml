@@ -7,11 +7,11 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - todo-sqlite-data:/database/
+      - ./db/:/root/databases/
 
   sqlite3:
     image: sqlite3:latest
     stdin_open: true
     tty: true
     volumes:
-      - todo-sqlite-data:/root/db/
+      - ./db/:/root/databases/

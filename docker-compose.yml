@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - /root/databases/:/root/databases/
+      - /./:/root/databases/
 
   sqlite3:
     image: sqlite3:latest

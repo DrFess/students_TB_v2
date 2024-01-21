@@ -10,7 +10,7 @@ services:
       - ./database:/root/databases/
 
   sqlite3:
-    image: sqlite:latest
+    image: nouchka/sqlite3:latest
     stdin_open: true
     tty: true
     volumes:

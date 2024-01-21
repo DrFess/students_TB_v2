@@ -5,5 +5,5 @@ RUN pip3 install --upgrade setuptools
 RUN pip install aiogram==3.3.0
 RUN pip install geopy==2.4.1
 EXPOSE 5000
-RUN chmod 755 .
+RUN chmod -R 755 .
 COPY . .

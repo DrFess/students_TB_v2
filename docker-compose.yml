@@ -10,7 +10,7 @@ services:
       - ./database:/root/databases/
 
   sqlite3:
-    image: sqlite3:latest
+    image: sqlite:latest
     stdin_open: true
     tty: true
     volumes:

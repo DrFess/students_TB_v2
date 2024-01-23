@@ -10,7 +10,7 @@ from handlers import registration, moderation, create_db, geolocation
 from keyboards import registration_kb
 from settings import TOKEN
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, filename='log.log')
 
 bot = Bot(token=TOKEN)
 router = Router()

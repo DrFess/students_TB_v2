@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO, filename='log.log')
 bot = Bot(token=TOKEN)
 router = Router()
 
-# test
+
 @router.message(Command(commands=['start']))
 async def start(message: Message):
     if check_teacher(message.from_user.id) or check_student(message.from_user.id):

@@ -5,7 +5,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from database.db import add_teacher, add_student_group
+from database.db import add_teacher, add_student_group, show_all_student_group
 from keyboards import adding_answer, back_button
 
 router = Router()
@@ -30,6 +30,7 @@ async def moderate_menu(message: Message):
     builder.row(InlineKeyboardButton(text='Добавить тему', callback_data='theme'))
     builder.row(InlineKeyboardButton(text='Добавить вопрос', callback_data='question'))
     builder.row(InlineKeyboardButton(text='Добавить группу', callback_data='group'))
+    builder.row(InlineKeyboardButton(text='Показать все группы', callback_data='all_groups'))
     await message.answer('Включен режим модерирования', reply_markup=builder.as_markup())
 
 
@@ -103,3 +104,12 @@ async def add_new_group(message: Message, state: FSMContext):
     except Exception as e:
         await message.answer(f'Что-то пошло не так(( {e}', reply_markup=back_button)
     await state.clear()
+
+
+@router.callback_query(F.data == 'all_groups')
+async def show_all_groups_in_message(callback: CallbackQuery):
+    groups_dict = show_all_student_group()
+    message = ''
+    for group in groups_dict:
+        message += f'{group}\n'
+    await callback.message.answer(message)

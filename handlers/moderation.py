@@ -138,7 +138,7 @@ async def select_group_for_delete(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(GroupSteps.delete)
 async def delete_group_telegram(callback: CallbackQuery, state: FSMContext):
-    data = callback.data
+    data = int(callback.data)
     try:
         delete_group(data)
     except Exception as e:

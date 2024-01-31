@@ -102,3 +102,4 @@ async def add_new_group(message: Message, state: FSMContext):
         await message.answer(f'Группа {message.text} добавлена', reply_markup=back_button)
     except Exception as e:
         await message.answer(f'Что-то пошло не так(( {e}', reply_markup=back_button)
+    await state.clear()

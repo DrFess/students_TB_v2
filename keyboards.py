@@ -29,3 +29,11 @@ adding_answer = ReplyKeyboardMarkup(
     one_time_keyboard=True,
     resize_keyboard=True
 )
+
+info_geolocation = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Да, подскажи')]
+    ],
+    one_time_keyboard=True,
+    resize_keyboard=True
+)

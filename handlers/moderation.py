@@ -130,6 +130,7 @@ async def select_group_for_delete(callback: CallbackQuery, state: FSMContext):
         builder = InlineKeyboardBuilder()
         for group in groups_dict:
             builder.row(InlineKeyboardButton(text=group, callback_data=f'{groups_dict[group]}'))
+        await callback.message.answer('Выбери группу для удаления', reply_markup=builder.as_markup())
     else:
         await callback.message.answer('Нет прав на удаление')
 

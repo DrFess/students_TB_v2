@@ -105,10 +105,10 @@ def add_student_group(cursor, title: str, sub_group: str):
 
 
 @connection_to_DB
-def delete_group(cursor, title: str, sub_group: str):
+def delete_group(cursor, id: int):
     """Удаление группы"""
     cursor.execute(
-        """DELETE FROM student_group WHERE title=? AND sub_group=?;""", (title, sub_group)
+        """DELETE FROM student_group WHERE id=?;""", (id,)
     )
 
 

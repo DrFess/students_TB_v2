@@ -5,7 +5,8 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher, show_all_teachers
+from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher, show_all_teachers, \
+    delete_group
 from keyboards import adding_answer, back_button
 
 router = Router()
@@ -136,9 +137,14 @@ async def select_group_for_delete(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(GroupSteps.delete)
-async def delete_group(callback: CallbackQuery, state: FSMContext):
+async def delete_group_telegram(callback: CallbackQuery, state: FSMContext):
     data = callback.data
-    await callback.message.answer(f'{data}')
+    try:
+        delete_group(data)
+    except Exception as e:
+        await callback.message.answer(f'{e}')
+    finally:
+        await state.clear()
 
 
 @router.callback_query(F.data == 'all_teachers')

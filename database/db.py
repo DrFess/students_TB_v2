@@ -105,6 +105,14 @@ def add_student_group(cursor, title: str, sub_group: str):
 
 
 @connection_to_DB
+def delete_group(cursor, title: str, sub_group: str):
+    """Удаление группы"""
+    cursor.execute(
+        """DELETE FROM student_group WHERE title=? AND sub_group=?;""", (title, sub_group)
+    )
+
+
+@connection_to_DB
 def show_all_student_group(cursor):
     """Получить данные всех групп"""
     groups_dict = {}

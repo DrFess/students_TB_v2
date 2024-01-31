@@ -5,7 +5,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from database.db import add_teacher, add_student_group, show_all_student_group
+from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher
 from keyboards import adding_answer, back_button
 
 router = Router()
@@ -21,6 +21,7 @@ class TeacherSteps(StatesGroup):
 
 class GroupSteps(StatesGroup):
     first = State()
+    delete = State()
 
 
 @router.message(Command(commands=['moderate']))
@@ -112,4 +113,27 @@ async def show_all_groups_in_message(callback: CallbackQuery):
     message = ''
     for group in groups_dict:
         message += f'{group}\n'
-    await callback.message.answer(message)
+    builder = InlineKeyboardBuilder()
+    builder.row(InlineKeyboardButton(text='Удалить группу', callback_data='delete_group'))
+    await callback.message.answer(
+        message,
+        reply_markup=builder.as_markup()
+    )
+
+
+@router.callback_query(F.data == 'delete_group')
+async def select_group_for_delete(callback: CallbackQuery, state: FSMContext):
+    if check_teacher(int(callback.message.from_user.id)):
+        await state.set_state(GroupSteps.delete)
+        groups_dict = show_all_student_group()
+        builder = InlineKeyboardBuilder()
+        for group in groups_dict:
+            builder.row(InlineKeyboardButton(text=group, callback_data=f'{groups_dict[group]}'))
+    else:
+        await callback.message.answer('Нет прав на удаление')
+
+
+@router.callback_query(GroupSteps.delete)
+async def delete_group(callback: CallbackQuery, state: FSMContext):
+    data = callback.data
+    await callback.message.answer(f'{data}')

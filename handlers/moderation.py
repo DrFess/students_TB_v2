@@ -5,7 +5,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher
+from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher, show_all_teachers
 from keyboards import adding_answer, back_button
 
 router = Router()
@@ -32,6 +32,7 @@ async def moderate_menu(message: Message):
     builder.row(InlineKeyboardButton(text='Добавить вопрос', callback_data='question'))
     builder.row(InlineKeyboardButton(text='Добавить группу', callback_data='group'))
     builder.row(InlineKeyboardButton(text='Показать все группы', callback_data='all_groups'))
+    builder.row(InlineKeyboardButton(text='Показать список преподавателей', callback_data='all_teachers'))
     await message.answer('Включен режим модерирования', reply_markup=builder.as_markup())
 
 
@@ -137,3 +138,10 @@ async def select_group_for_delete(callback: CallbackQuery, state: FSMContext):
 async def delete_group(callback: CallbackQuery, state: FSMContext):
     data = callback.data
     await callback.message.answer(f'{data}')
+
+
+@router.callback_query(F.data == 'all_teachers')
+async def show_all_teachers_in_message(callback: CallbackQuery):
+    data = show_all_teachers()
+    message = data.values()
+    await callback.message.answer(f'{message}')

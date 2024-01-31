@@ -173,6 +173,15 @@ def check_teacher(cursor, telegram_id: int):
 
 
 @connection_to_DB
+def show_all_teachers(cursor) -> dict:
+    teachers = cursor.execute('SELECT * FROM teacher;').fetchall()
+    teachers_dict = {}
+    for item in teachers:
+        teachers_dict[item[0]] = f'{item[1]}, {item[2]}, {item[3]}, {item[4]}'
+    return teachers_dict
+
+
+@connection_to_DB
 def add_theme(cursor, title: str):
     """Добавление темы"""
     cursor.execute("INSERT INTO theme (title) VALUES (?)", (title,))

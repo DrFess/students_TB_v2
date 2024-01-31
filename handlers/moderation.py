@@ -124,7 +124,7 @@ async def show_all_groups_in_message(callback: CallbackQuery):
 
 @router.callback_query(F.data == 'delete_group')
 async def select_group_for_delete(callback: CallbackQuery, state: FSMContext):
-    if check_teacher(callback.message.from_user.id):
+    if check_teacher(callback.from_user.id):
         await state.set_state(GroupSteps.delete)
         groups_dict = show_all_student_group()
         builder = InlineKeyboardBuilder()

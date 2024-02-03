@@ -6,7 +6,7 @@ from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher, show_all_teachers, \
-    delete_group, add_theme
+    delete_group, add_theme, show_all_themes
 from keyboards import adding_answer, back_button
 
 router = Router()
@@ -38,6 +38,7 @@ async def moderate_menu(message: Message):
     builder.row(InlineKeyboardButton(text='Добавить группу', callback_data='group'))
     builder.row(InlineKeyboardButton(text='Показать все группы', callback_data='all_groups'))
     builder.row(InlineKeyboardButton(text='Показать список преподавателей', callback_data='all_teachers'))
+    builder.row(InlineKeyboardButton(text='Показать список тем', callback_data='all_themes'))
     await message.answer('Включен режим модерирования', reply_markup=builder.as_markup())
 
 
@@ -174,3 +175,9 @@ async def add_theme_in_message(message: Message, state: FSMContext):
     finally:
         await state.clear()
 
+
+@router.callback_query(F.data == 'all_themes')
+async def input_theme(callback: CallbackQuery):
+    data = show_all_themes()
+    message = data.values()
+    await callback.message.answer(f'{message}')

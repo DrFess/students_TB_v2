@@ -132,7 +132,8 @@ def show_student_group(cursor, group_title: str, sub_group: str):
 @connection_to_DB
 def show_student_group_title(cursor, id: int):
     """Получить данные группы по id"""
-    title = cursor.execute("""SELECT title, sub_group FROM student_group WHERE id=?;""", (id,)).fetchone()[0]
+    group_object = cursor.execute("""SELECT title, sub_group FROM student_group WHERE id=?;""", (id,)).fetchone()
+    title = f'{group_object[0]} {group_object[1]}'
     return title
 
 

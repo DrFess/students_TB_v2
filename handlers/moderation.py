@@ -179,5 +179,5 @@ async def add_theme_in_message(message: Message, state: FSMContext):
 @router.callback_query(F.data == 'all_themes')
 async def input_theme(callback: CallbackQuery):
     data = show_all_themes()
-    message = data.values()
+    message = data.keys()
     await callback.message.answer(f'{message}')

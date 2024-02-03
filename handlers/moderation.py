@@ -270,6 +270,7 @@ async def add_question_data(message: Message, state: FSMContext):
             right_answer=data["right_answer"],
             theme_id=data["theme_id"]
         )
+        await message.answer('Вопрос добавлен')
     elif message.text == 'Нет, не все данные верные.':
         await message.answer('Придётся начать всё заново')
     else:

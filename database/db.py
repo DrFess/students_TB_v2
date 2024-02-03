@@ -226,7 +226,7 @@ def show_all_themes(cursor):
 @connection_to_DB
 def show_theme_title(cursor, id: int):
     """Показать тему по id"""
-    theme = cursor.execute("""SELECT * FROM theme WHERE id=?;""", (id,)).fetchone()[0]
+    theme = cursor.execute("""SELECT title FROM theme WHERE id=?;""", (id,)).fetchone()[0]
     return theme
 
 

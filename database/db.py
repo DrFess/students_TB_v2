@@ -130,6 +130,13 @@ def show_student_group(cursor, group_title: str, sub_group: str):
 
 
 @connection_to_DB
+def show_student_group_title(cursor, id: int):
+    """Получить данные группы по id"""
+    title = cursor.execute("""SELECT title, sub_group FROM student_group WHERE id=?;""", (id,)).fetchone()
+    return title
+
+
+@connection_to_DB
 def add_student(cursor, telegram_id: int, surname: str, name: str, patronymic: str, group_id: str):
     """Добавление студента"""
     data = (telegram_id, surname, name, patronymic, group_id)
@@ -149,6 +156,16 @@ def check_student(cursor, telegram_id: int):
     if cursor.execute('SELECT * FROM student WHERE telegram_id=?;', (telegram_id,)).fetchone():
         return True
     return False
+
+
+@connection_to_DB
+def show_group_students(cursor, group_id: int):
+    """Возвращает список telegram_id студентов группы"""
+    students = cursor.execute('SELECT telegram_id FROM student WHERE group_id=?;', (group_id,)).fetchall()
+    students_list = []
+    for student in students:
+        students_list.append(student[0])
+    return students_list
 
 
 @connection_to_DB
@@ -174,6 +191,7 @@ def check_teacher(cursor, telegram_id: int):
 
 @connection_to_DB
 def show_all_teachers(cursor) -> dict:
+    """Показать всех учителей"""
     teachers = cursor.execute('SELECT * FROM teacher;').fetchall()
     teachers_dict = {}
     for item in teachers:
@@ -182,9 +200,33 @@ def show_all_teachers(cursor) -> dict:
 
 
 @connection_to_DB
+def show_teacher_id(cursor, telegram_id):
+    """Получение фамилии преподавателя по telegram_id"""
+    teacher = cursor.execute('SELECT id FROM teacher WHERE telegram_id=?;', (telegram_id,)).fetchone()[0]
+    return teacher
+
+
+@connection_to_DB
 def add_theme(cursor, title: str):
     """Добавление темы"""
     cursor.execute("INSERT INTO theme (title) VALUES (?)", (title,))
+
+
+@connection_to_DB
+def show_all_themes(cursor):
+    """Показать все темы"""
+    themes_dict = {}
+    themes = cursor.execute("""SELECT * FROM theme""").fetchall()
+    for theme in themes:
+        themes_dict[f'{theme[1]}'] = theme[0]
+    return themes_dict
+
+
+@connection_to_DB
+def show_theme_title(cursor, id: int):
+    """Показать тему по id"""
+    theme = cursor.execute("""SELECT * FROM theme WHERE id=?;""", (id,)).fetchone()[0]
+    return theme
 
 
 @connection_to_DB
@@ -204,16 +246,14 @@ def add_question(cursor, content: str, first_answer: str, second_answer: str,
         ) VALUES (?, ?, ?, ?, ?, ?, ?)""", data)
 
 
-# create_tables()
-# add_student_group('22-1', 'A')
-# add_student_group('22-1', 'Б')
-# add_student_group('22-2', 'A')
-# add_student_group('22-2', 'Б')
-# add_student_group('22-3', 'A')
-# add_student_group('22-3', 'Б')
-# add_student_group('21-5', 'A')
-# add_student_group('21-5', 'Б')
-# add_student_group('21-7', 'A')
-# add_student_group('21-7', 'Б')
-# add_student_group('22-7', 'A')
-# add_student_group('22-7', 'Б')
+@connection_to_DB
+def add_lesson(cursor, date, theme_id, who_was, who_taught_lesson):
+    data = (date, theme_id, who_was, who_taught_lesson)
+    cursor.execute(
+        """INSERT INTO lesson (
+        date, 
+        theme_id, 
+        who_was, 
+        who_taught_lesson
+        ) VALUES (?, ?, ?, ?)""", data)
+

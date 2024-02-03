@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 back_button = ReplyKeyboardMarkup(
     keyboard=[[KeyboardButton(text=f'\U0001F519 Вернуться в меню')]],

@@ -6,7 +6,7 @@ from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher, show_all_teachers, \
-    delete_group
+    delete_group, add_theme
 from keyboards import adding_answer, back_button
 
 router = Router()
@@ -23,6 +23,10 @@ class TeacherSteps(StatesGroup):
 class GroupSteps(StatesGroup):
     first = State()
     delete = State()
+
+
+class ThemeSteps(StatesGroup):
+    add = State()
 
 
 @router.message(Command(commands=['moderate']))
@@ -152,3 +156,21 @@ async def show_all_teachers_in_message(callback: CallbackQuery):
     data = show_all_teachers()
     message = data.values()
     await callback.message.answer(f'{message}')
+
+
+@router.callback_query(F.data == 'theme')
+async def input_theme(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer('Укажите название темы')
+    await state.set_state(ThemeSteps.add)
+
+
+@router.message(ThemeSteps.add)
+async def add_theme_in_message(message: Message, state: FSMContext):
+    try:
+        add_theme(message.text)
+        await message.answer(f'Тема "{message.text}" добавлена')
+    except Exception as e:
+        await message.answer(f'{e}')
+    finally:
+        await state.clear()
+

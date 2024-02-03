@@ -75,7 +75,7 @@ async def send_message_group(message: Message, state: FSMContext):
         add_lesson(
             datetime.datetime.now().strftime('%d-%m-%Y'),
             data['theme_id'],
-            '+',
+            data['group'],
             teacher
         )
         await message.answer(f'Рассылка группе {data["group"]} отправлена', reply_markup=back_button)

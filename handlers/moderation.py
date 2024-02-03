@@ -6,7 +6,7 @@ from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher, show_all_teachers, \
-    delete_group, add_theme, show_all_themes
+    delete_group, add_theme, show_all_themes, add_question
 from keyboards import adding_answer, back_button
 
 router = Router()
@@ -27,6 +27,17 @@ class GroupSteps(StatesGroup):
 
 class ThemeSteps(StatesGroup):
     add = State()
+
+
+class Question(StatesGroup):
+    content = State()
+    first_answer = State()
+    second_answer = State()
+    third_answer = State()
+    fourth_answer = State()
+    right_answer = State()
+    theme_id = State()
+    data_check = State()
 
 
 @router.message(Command(commands=['moderate']))
@@ -182,3 +193,85 @@ async def input_theme(callback: CallbackQuery):
     message = data.keys()
     await callback.message.answer(f'{message}')
 
+
+@router.callback_query(F.data == 'question')
+async def add_question_content(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(Question.content)
+    await callback.message.answer('Отправь текст вопроса', reply_markup=back_button)
+
+
+@router.message(Question.content)
+async def add_first_answer(message: Message, state: FSMContext):
+    await state.update_data(content=message.text)
+    await state.set_state(Question.first_answer)
+    await message.answer('Отправь первый вариант ответа', reply_markup=back_button)
+
+
+@router.message(Question.first_answer)
+async def add_second_answer(message: Message, state: FSMContext):
+    await state.update_data(first_answer=message.text)
+    await state.set_state(Question.second_answer)
+    await message.answer('Отправь второй вариант ответа', reply_markup=back_button)
+
+
+@router.message(Question.second_answer)
+async def add_third_answer(message: Message, state: FSMContext):
+    await state.update_data(second_answer=message.text)
+    await state.set_state(Question.third_answer)
+    await message.answer('Отправь третий вариант ответа', reply_markup=back_button)
+
+
+@router.message(Question.third_answer)
+async def add_fourth_answer(message: Message, state: FSMContext):
+    await state.update_data(third_answer=message.text)
+    await state.set_state(Question.fourth_answer)
+    await message.answer('Отправь четвертый вариант ответа', reply_markup=back_button)
+
+
+@router.message(Question.fourth_answer)
+async def add_right_answer(message: Message, state: FSMContext):
+    await state.update_data(fourth_answer=message.text)
+    await state.set_state(Question.right_answer)
+    await message.answer('Отправь номер правильного ответа', reply_markup=back_button)
+
+
+@router.message(Question.right_answer)
+async def add_theme_id(message: Message, state: FSMContext):
+    await state.update_data(right_answer=message.text)
+    await state.set_state(Question.theme_id)
+    await message.answer('Отправь номер темы', reply_markup=back_button)
+
+
+@router.message(Question.theme_id)
+async def question_data_check(message: Message, state: FSMContext):
+    await state.update_data(theme_id=message.text)
+    await state.set_state(Question.data_check)
+    data = await state.get_data()
+    text = f'Вопрос: {data["content"]}\n' \
+           f'Первый вариант: {data["first_answer"]}\n' \
+           f'Второй вариант: {data["second_answer"]}\n' \
+           f'Третий вариант: {data["third_answer"]}\n' \
+           f'Четвёртый вариант: {data["fourth_answer"]}\n' \
+           f'Номер правильного ответа: {data["right_answer"]}\n' \
+           f'Номер темы вопроса: {data["theme_id"]}'
+    await message.answer(text, reply_markup=adding_answer)
+
+
+@router.message(Question.data_check)
+async def add_question_data(message: Message, state: FSMContext):
+    if message.text == 'Да, всё верно.':
+        data = await state.get_data()
+        add_question(
+            content=data["content"],
+            first_answer=data["first_answer"],
+            second_answer=data["second_answer"],
+            third_answer=data["third_answer"],
+            fourth_answer=data["fourth_answer"],
+            right_answer=data["right_answer"],
+            theme_id=data["theme_id"]
+        )
+    elif message.text == 'Нет, не все данные верные.':
+        await message.answer('Придётся начать всё заново')
+    else:
+        await message.answer('Что-то пошло не так', reply_markup=back_button)
+    await state.clear()

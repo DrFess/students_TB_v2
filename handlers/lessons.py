@@ -69,7 +69,7 @@ async def send_message_group(message: Message, state: FSMContext):
         for student in students:
             await bot.send_message(
                 chat_id=student,
-                text=f'Пройди тест по теме {data["theme"]}',
+                text=f'Пройди тест по теме:',
                 reply_markup=builder.as_markup()
             )
         add_lesson(

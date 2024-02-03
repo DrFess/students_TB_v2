@@ -181,3 +181,4 @@ async def input_theme(callback: CallbackQuery):
     data = show_all_themes()
     message = data.keys()
     await callback.message.answer(f'{message}')
+

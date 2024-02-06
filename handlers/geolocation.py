@@ -19,7 +19,7 @@ class Testing(StatesGroup):
 async def testing(callback: CallbackQuery, state: FSMContext):
     await state.set_state(Testing.start)
     test = show_questions_on_theme(callback.data)
-    await callback.message.answer(f'{test}')
+    # await callback.message.answer(f'{test}')
 
 
 @router.callback_query(F.data == 'geo')

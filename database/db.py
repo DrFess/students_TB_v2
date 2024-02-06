@@ -248,6 +248,35 @@ def add_question(cursor, content: str, first_answer: str, second_answer: str,
 
 
 @connection_to_DB
+def show_all_questions(cursor):
+    """Получить все вопросы теста (
+    [0] - id вопроса,
+    [1] - текст вопроса,
+    [2]-[5] - варианты ответа,
+    [6] - номер верного ответа,
+    [7] - номер темы
+    )"""
+    questions = cursor.execute("""SELECT * FROM question""").fetchall()
+    return questions
+
+
+@connection_to_DB
+def show_questions_on_theme(cursor, theme_id):
+    """Получить все вопросы теста теме (
+    [0] - id вопроса,
+    [1] - текст вопроса,
+    [2]-[5] - варианты ответа,
+    [6] - номер верного ответа,
+    [7] - номер темы
+    )"""
+    questions = cursor.execute("""SELECT * FROM question WHERE theme_id=?;""", (theme_id,)).fetchall()
+    question_dict = {}
+    for question in questions:
+        question_dict[question[0]] = [question[1], question[2], question[3], question[4], question[5], question[6], question[7]]
+    return question_dict
+
+
+@connection_to_DB
 def add_lesson(cursor, date, theme_id, who_was, who_taught_lesson):
     data = (date, theme_id, who_was, who_taught_lesson)
     cursor.execute(
@@ -258,3 +287,5 @@ def add_lesson(cursor, date, theme_id, who_was, who_taught_lesson):
         who_taught_lesson
         ) VALUES (?, ?, ?, ?)""", data)
 
+
+print(show_questions_on_theme(1))

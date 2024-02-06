@@ -1,11 +1,25 @@
 import datetime
 
 from aiogram import Router, F
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, ReplyKeyboardRemove, Message
 
+from database.db import show_questions_on_theme
 from keyboards import info_geolocation
 
 router = Router()
+
+
+class Testing(StatesGroup):
+    start = State()
+
+
+@router.callback_query(F.data in [1, 2, 3, 4, 5, 6, 7, 8, 9])
+async def testing(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(Testing.start)
+    test = show_questions_on_theme(callback.data)
+    await callback.message.answer(f'{test}')
 
 
 @router.callback_query(F.data == 'geo')

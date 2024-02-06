@@ -286,3 +286,13 @@ def add_lesson(cursor, date, theme_id, who_was, who_taught_lesson):
         who_was, 
         who_taught_lesson
         ) VALUES (?, ?, ?, ?)""", data)
+
+
+@connection_to_DB
+def add_student_answer(cursor, data):
+    cursor.execute(
+        """INSERT INTO student_answers (
+        student_id, 
+        lesson_id, 
+        answers
+        ) VALUES (?, ?, ?)""", data)

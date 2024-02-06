@@ -37,3 +37,25 @@ info_geolocation = ReplyKeyboardMarkup(
     one_time_keyboard=True,
     resize_keyboard=True
 )
+
+start_test = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Начать тест')]
+    ],
+    resize_keyboard=True
+)
+
+next_question = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Следующий вопрос')]
+    ],
+    resize_keyboard=True
+)
+
+test_result = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Покажи результат')]
+    ],
+    one_time_keyboard=True,
+    resize_keyboard=True
+)

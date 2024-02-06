@@ -3,23 +3,82 @@ import datetime
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import CallbackQuery, ReplyKeyboardRemove, Message
+from aiogram.types import CallbackQuery, ReplyKeyboardRemove, Message, PollAnswer
 
-from database.db import show_questions_on_theme
-from keyboards import info_geolocation
+from database.db import show_questions_on_theme, add_student_answer
+from keyboards import info_geolocation, start_test, next_question, test_result
 
 router = Router()
 
 
 class Testing(StatesGroup):
     start = State()
+    question = State()
+    finish = State()
 
 
 @router.callback_query(F.data.in_({'1', '2', '3', '4', '5', '6', '7', '8', '9', '10'}))
 async def testing(callback: CallbackQuery, state: FSMContext):
     await state.set_state(Testing.start)
     test = show_questions_on_theme(callback.data)
-    await callback.message.answer(f'{test}')
+    await state.update_data(
+        telegram_id=callback.from_user.id,
+        test=test,
+        date=callback.date.today().strftime('%d-%m-%Y'),
+        count=0
+    )
+    await callback.message.answer('Тест загружен. Начать тест?', reply_markup=start_test)
+
+
+@router.message(Testing.start, F.text.in_({'Начать тест', 'Следующий вопрос'}))
+async def ask_question(message: Message, state: FSMContext):
+    data = await state.get_data()
+
+    if data['count'] <= (len(data['test']) - 1):
+        serial_number = data['count'] + 1
+
+        question = data['questions']
+
+        question_text = question[serial_number][0]
+        options = [
+            question[serial_number][1],
+            question[serial_number][2],
+            question[serial_number][3],
+            question[serial_number][4]
+        ]
+        await message.answer_poll(
+            question=question_text,
+            options=options,
+            is_anonymous=False,
+            reply_markup=next_question
+        )
+
+        await state.update_data(
+            theme_id=question[serial_number][6],
+            correct_answer=question[serial_number][5],
+            text=question_text,
+            count=data['count'] + 1
+        )
+
+        await state.set_state(Testing.question)
+
+    else:
+        await message.answer('Вопросы по теме закончились', reply_markup=test_result)
+        await state.set_state(Testing.finish)
+
+
+@router.poll_answer(Testing.question)
+async def answer_poll(answer: PollAnswer, state: FSMContext):
+    await state.update_data(student_answer=answer.option_ids[0] + 1)
+    info = await state.get_data()
+    data = (info['telegram_id'], info['theme_id'], answer.option_ids[0] + 1)
+    add_student_answer(data)
+    await state.set_state(Testing.start)
+
+
+@router.message(Testing.finish, F.text == 'Покажи результат')
+async def total(message: Message, state: FSMContext):
+    await message.answer('функция в разработке')
 
 
 @router.callback_query(F.data == 'geo')

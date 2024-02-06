@@ -2,6 +2,7 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, Router, F
 from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -25,10 +26,11 @@ async def start(message: Message):
 
 
 @router.message(Command(commands=['menu']))
-async def menu(message: Message):
+async def menu(message: Message, state: FSMContext):
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(text='Отправить геолокацию', callback_data='geo'))
     await message.answer('Вы находитесь в главном меню', reply_markup=builder.as_markup())
+    await state.clear()
 
 
 @router.message(F.text == f'\U0001F519 Вернуться в меню')

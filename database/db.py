@@ -286,6 +286,3 @@ def add_lesson(cursor, date, theme_id, who_was, who_taught_lesson):
         who_was, 
         who_taught_lesson
         ) VALUES (?, ?, ?, ?)""", data)
-
-
-print(show_questions_on_theme(1))

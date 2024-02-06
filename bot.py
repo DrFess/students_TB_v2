@@ -50,8 +50,8 @@ async def main():
         registration.router,
         moderation.router,
         create_db.router,
+        lessons.router,
         geolocation.router,
-        lessons.router
     )
 
     await bot.delete_webhook(drop_pending_updates=True)

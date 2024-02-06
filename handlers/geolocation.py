@@ -20,7 +20,7 @@ class Testing(StatesGroup):
 @router.callback_query(F.data.in_({'1', '2', '3', '4', '5', '6', '7', '8', '9'}))
 async def testing(callback: CallbackQuery, state: FSMContext):
     await state.set_state(Testing.start)
-    test = show_questions_on_theme(callback.data)
+    test = show_questions_on_theme(int(callback.data))
     await state.update_data(
         telegram_id=callback.from_user.id,
         test=test,

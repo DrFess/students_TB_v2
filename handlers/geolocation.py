@@ -15,7 +15,7 @@ class Testing(StatesGroup):
     start = State()
 
 
-@router.callback_query(F.data in [1, 2, 3, 4, 5, 6, 7, 8, 9])
+@router.callback_query(F.data.in_({1, 2, 3, 4, 5, 6, 7, 8, 9}))
 async def testing(callback: CallbackQuery, state: FSMContext):
     await state.set_state(Testing.start)
     test = show_questions_on_theme(callback.data)

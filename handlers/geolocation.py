@@ -24,20 +24,20 @@ async def testing(callback: CallbackQuery, state: FSMContext):
     await state.update_data(
         telegram_id=callback.from_user.id,
         test=test,
-        date=callback.date.today().strftime('%d-%m-%Y'),
+        date=callback.message.date.today().strftime('%d-%m-%Y'),
         count=0
     )
     await callback.message.answer('Тест загружен. Начать тест?', reply_markup=start_test)
 
 
-@router.message(Testing.start, F.text.in_({'Начать тест', 'Следующий вопрос'}))
+@router.message(Testing.start, (F.text == 'Начать тест') | (F.text == 'Следующий вопрос'))
 async def ask_question(message: Message, state: FSMContext):
     data = await state.get_data()
 
     if data['count'] <= (len(data['test']) - 1):
         serial_number = data['count'] + 1
 
-        question = data['questions']
+        question = data['test']
 
         question_text = question[serial_number][0]
         options = [
@@ -81,50 +81,50 @@ async def total(message: Message, state: FSMContext):
     await message.answer('функция в разработке')
 
 
-# @router.callback_query(F.data == 'geo')
-# async def send_geolocation(callback: CallbackQuery):
-#     await callback.message.answer('Начни транслировать свою геопозицию. Если геопозицию просто отправишь - не зачту\n'
-#                                   'Подсказать как это сделать?', reply_markup=info_geolocation)
-#
-#
-# @router.message(F.text == 'Да, подскажи')
-# async def how_to_share_location(message: Message):
-#     await message.answer_photo(
-#         'AgACAgIAAxkBAAKpZGSHPsxt1DBKVNzzniN7_TYMzMFVAALgyTEbA4JBSHlVtBHkEZLMAQADAgADeQADLwQ',
-#         caption='Нажми на "скрепку" слева от поля ввода сообщения'
-#     )
-#     await message.answer_photo(
-#         'AgACAgIAAxkBAAKpbmSHQCVqo6OqAn1Y-sqIzUJhmlmkAALkyTEbA4JBSPlIiYqYcYcuAQADAgADeQADLwQ',
-#         caption='Иногда "скрепка" может быть справа от поля ввода'
-#     )
-#     await message.answer_photo(
-#         'AgACAgIAAxkBAAKpcGSHQHaZ7lZbo2V0hQUvMN572RP-AALhyTEbA4JBSJJ0stNuAAHIhwEAAwIAA3kAAy8E',
-#         caption='В открывшемся меню внизу нажми на "Геопозиция"'
-#     )
-#     await message.answer_photo(
-#         'AgACAgIAAxkBAAKpcmSHQNuy4_M2GtM19MckfssJOemyAALiyTEbA4JBSP8IVhjNbvLeAQADAgADeQADLwQ',
-#         caption='В следующем меню выбери "Транслировать геопозицию". Длительность трансляции можно выбрать любое'
-#     )
-#     await message.answer_photo(
-#         'AgACAgIAAxkBAAKpdGSHQX85OJ_zd-oX5toLYymNWY8PAALjyTEbA4JBSIjJavB8yW6ZAQADAgADeQADLwQ',
-#         caption='Когда бот ответит что трансляцию можно остановить, нажми на "крестик" в правом верхнем углу'
-#     )
-#     await message.answer(
-#         'Следуя этой инструкции попробуй транслировать геопозицию\n'
-#         'Чтобы перезапустить бота \nнажми ---> /start.',
-#         reply_markup=ReplyKeyboardRemove()
-#     )
-#
-#
-# @router.message(F.location)
-# async def first_location(message: Message):
-#     if message.location.live_period:
-#         payload = {
-#             'longitude': message.location.longitude,
-#             'latitude': message.location.latitude,
-#             'telegram_id': message.from_user.id,
-#             'date': datetime.datetime.now().strftime('%Y-%m-%d')
-#         }
-#         await message.answer(f'{payload}')
-#     else:
-#         await message.answer('Геолокация не получена')
+@router.callback_query(F.data == 'geo')
+async def send_geolocation(callback: CallbackQuery):
+    await callback.message.answer('Начни транслировать свою геопозицию. Если геопозицию просто отправишь - не зачту\n'
+                                  'Подсказать как это сделать?', reply_markup=info_geolocation)
+
+
+@router.message(F.text == 'Да, подскажи')
+async def how_to_share_location(message: Message):
+    await message.answer_photo(
+        'AgACAgIAAxkBAAKpZGSHPsxt1DBKVNzzniN7_TYMzMFVAALgyTEbA4JBSHlVtBHkEZLMAQADAgADeQADLwQ',
+        caption='Нажми на "скрепку" слева от поля ввода сообщения'
+    )
+    await message.answer_photo(
+        'AgACAgIAAxkBAAKpbmSHQCVqo6OqAn1Y-sqIzUJhmlmkAALkyTEbA4JBSPlIiYqYcYcuAQADAgADeQADLwQ',
+        caption='Иногда "скрепка" может быть справа от поля ввода'
+    )
+    await message.answer_photo(
+        'AgACAgIAAxkBAAKpcGSHQHaZ7lZbo2V0hQUvMN572RP-AALhyTEbA4JBSJJ0stNuAAHIhwEAAwIAA3kAAy8E',
+        caption='В открывшемся меню внизу нажми на "Геопозиция"'
+    )
+    await message.answer_photo(
+        'AgACAgIAAxkBAAKpcmSHQNuy4_M2GtM19MckfssJOemyAALiyTEbA4JBSP8IVhjNbvLeAQADAgADeQADLwQ',
+        caption='В следующем меню выбери "Транслировать геопозицию". Длительность трансляции можно выбрать любое'
+    )
+    await message.answer_photo(
+        'AgACAgIAAxkBAAKpdGSHQX85OJ_zd-oX5toLYymNWY8PAALjyTEbA4JBSIjJavB8yW6ZAQADAgADeQADLwQ',
+        caption='Когда бот ответит что трансляцию можно остановить, нажми на "крестик" в правом верхнем углу'
+    )
+    await message.answer(
+        'Следуя этой инструкции попробуй транслировать геопозицию\n'
+        'Чтобы перезапустить бота \nнажми ---> /start.',
+        reply_markup=ReplyKeyboardRemove()
+    )
+
+
+@router.message(F.location)
+async def first_location(message: Message):
+    if message.location.live_period:
+        payload = {
+            'longitude': message.location.longitude,
+            'latitude': message.location.latitude,
+            'telegram_id': message.from_user.id,
+            'date': datetime.datetime.now().strftime('%Y-%m-%d')
+        }
+        await message.answer(f'{payload}')
+    else:
+        await message.answer('Геолокация не получена')

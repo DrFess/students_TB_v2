@@ -278,6 +278,7 @@ def show_questions_on_theme(cursor, theme_id):
 
 @connection_to_DB
 def add_lesson(cursor, date, theme_id, who_was, who_taught_lesson):
+    """Добавляет запись о новом занятии (начатом)"""
     data = (date, theme_id, who_was, who_taught_lesson)
     cursor.execute(
         """INSERT INTO lesson (
@@ -290,9 +291,50 @@ def add_lesson(cursor, date, theme_id, who_was, who_taught_lesson):
 
 @connection_to_DB
 def add_student_answer(cursor, data):
+    """Добавляет запись об ответе студента"""
     cursor.execute(
         """INSERT INTO student_answers (
         student_id, 
         lesson_id, 
         answers
         ) VALUES (?, ?, ?)""", data)
+
+
+@connection_to_DB
+def get_student_answer_and_score(cursor, student_id, lesson_id):
+    """Получить ответ студента и его оценку"""
+    raw_answers = cursor.execute(
+        """SELECT answers FROM student_answers WHERE student_id=? AND lesson_id=?;""",
+        (student_id, lesson_id)).fetchall()
+    answers = []
+    right_answers = []
+    for item in raw_answers:
+        answers.append(item[0])
+        if item[0].endswith('+'):
+            right_answers.append(item[0])
+    result = round(len(right_answers) / len(raw_answers), 2)
+    return result, answers
+
+
+@connection_to_DB
+def check_answers_in_database(cursor, student_id, lesson_id):
+    """Отдаёт id ответов студента по теме"""
+    data = cursor.execute(
+        """SELECT id FROM student_answers WHERE student_id=? AND lesson_id=?;""",
+        (student_id, lesson_id)).fetchall()
+    answers = []
+    for item in data:
+        item_set = (item[0],)
+        answers.append(item_set),
+    return answers
+
+
+@connection_to_DB
+def delete_answers(cursor, answers: list):
+    """Удаляет ответы студента по id ответов"""
+    try:
+        query = """DELETE FROM student_answers WHERE id=?"""
+        cursor.executemany(query, answers)
+        return True
+    except Exception:
+        return False

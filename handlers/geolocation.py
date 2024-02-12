@@ -5,10 +5,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, ReplyKeyboardRemove, Message, PollAnswer, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from geopy import distance
 
 from database.db import show_questions_on_theme, add_student_answer, get_student_answer_and_score, \
     check_answers_in_database, delete_answers
 from keyboards import info_geolocation, start_test, next_question, test_result
+from settings import LATITUDE, LONGITUDE
 
 router = Router()
 
@@ -133,11 +135,15 @@ async def how_to_share_location(message: Message):
 @router.message(F.location)
 async def first_location(message: Message, state:FSMContext):
     if message.location.live_period:
+        student_coordinate = (message.location.latitude, message.location.longitude)
+        const_coordinate = (LATITUDE, LONGITUDE)
+        geolocation = distance.distance(const_coordinate, student_coordinate).km
         payload = {
             'longitude': message.location.longitude,
             'latitude': message.location.latitude,
             'telegram_id': message.from_user.id,
-            'date': datetime.datetime.now().strftime('%Y-%m-%d')
+            'date': datetime.datetime.now().strftime('%d-%m-%Y'),
+            'distance': geolocation
         }
         await message.answer(f'{payload}')
     else:

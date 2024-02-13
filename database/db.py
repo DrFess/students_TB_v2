@@ -102,7 +102,7 @@ def create_tables(cursor):
                                             telegram_id INTEGER,
                                             date timestamp,
                                             distance INTEGER,
-                                            FOREIGN KEY (telegram_id) REFERENCES (telegram_id) ON DELETE CASCADE
+                                            FOREIGN KEY (telegram_id) REFERENCES student(telegram_id) ON DELETE CASCADE
         )""",
     )
 

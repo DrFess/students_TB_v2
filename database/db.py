@@ -98,7 +98,7 @@ def create_tables(cursor):
 
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS attending_classes(
-                                            id INTEGER PRYMARY KEY AUTOINCREMENT,
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT,
                                             telegram_id INTEGER,
                                             date timestamp,
                                             distance INTEGER,

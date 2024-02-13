@@ -96,6 +96,18 @@ def create_tables(cursor):
         )""",
     )
 
+    cursor.execute(
+        """CREATE TABLE IF NOT EXISTS attending_classes(
+                                            id INTEGER PRYMARY KEY AUTOINCREMENT,
+                                            telegram_id INTEGER,
+                                            date timestamp,
+                                            distance INTEGER,
+                                            FOREIGN KEY (telegram_id) REFERENCES (telegram_id) ON DELETE CASCADE
+                                            )
+        
+        """
+    )
+
 
 @connection_to_DB
 def add_student_group(cursor, title: str, sub_group: str):
@@ -338,3 +350,11 @@ def delete_answers(cursor, answers: list):
         return True
     except Exception:
         return False
+
+
+@connection_to_DB
+def add_student_attending(cursor, telegram_id, date, distance):
+    """Записывает удаленность студента от ИСО"""
+    query = """INSERT INTO attending_classes(telegram_id, date, distance) VALUES (?, ?, ?)"""
+    data = (telegram_id, date, distance)
+    cursor.execute(query, data)

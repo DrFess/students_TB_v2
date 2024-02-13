@@ -8,7 +8,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from geopy import distance
 
 from database.db import show_questions_on_theme, add_student_answer, get_student_answer_and_score, \
-    check_answers_in_database, delete_answers
+    check_answers_in_database, delete_answers, add_student_attending
 from keyboards import info_geolocation, start_test, next_question, test_result
 from settings import LATITUDE, LONGITUDE
 
@@ -19,6 +19,7 @@ class Testing(StatesGroup):
     start = State()
     question = State()
     finish = State()
+    geolocation = State()
 
 
 @router.callback_query(F.data.in_({'1', '2', '3', '4', '5', '6', '7', '8', '9'}))
@@ -88,22 +89,19 @@ async def answer_poll(answer: PollAnswer, state: FSMContext):
 
 @router.message(Testing.finish, F.text == 'Покажи результат')
 async def return_test_result(message: Message, state: FSMContext):
-    data = await state.get_data()
-    theme_id = data['theme_id']
-    answers_and_score = get_student_answer_and_score(message.from_user.id, theme_id)
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(text='Отправить геолокацию', callback_data='geo'))
-    await message.answer(f'Ваш результат: {answers_and_score[0] * 100}%\n'
-                         f'Для продолжения и сохранения результатов нажми:', reply_markup=builder.as_markup())
+    await message.answer(f'Чтобы узнать свой результат нажми:', reply_markup=builder.as_markup())
+    await state.set_state(Testing.geolocation)
 
 
-@router.callback_query(F.data == 'geo')
+@router.callback_query(Testing.geolocation, F.data == 'geo')
 async def send_geolocation(callback: CallbackQuery):
     await callback.message.answer('Начни транслировать свою геопозицию. Если геопозицию просто отправишь - не зачту\n'
                                   'Подсказать как это сделать?', reply_markup=info_geolocation)
 
 
-@router.message(F.text == 'Да, подскажи')
+@router.message(Testing.geolocation, F.text == 'Да, подскажи')
 async def how_to_share_location(message: Message):
     await message.answer_photo(
         'AgACAgIAAxkBAAKpZGSHPsxt1DBKVNzzniN7_TYMzMFVAALgyTEbA4JBSHlVtBHkEZLMAQADAgADeQADLwQ',
@@ -132,20 +130,19 @@ async def how_to_share_location(message: Message):
     )
 
 
-@router.message(F.location)
-async def first_location(message: Message, state:FSMContext):
+@router.message(Testing.geolocation, F.location)
+async def write_location(message: Message, state: FSMContext):
     if message.location.live_period:
+        data = await state.get_data()
+        theme_id = data['theme_id']
+        answers_and_score = get_student_answer_and_score(message.from_user.id, theme_id)
+
         student_coordinate = (message.location.latitude, message.location.longitude)
         const_coordinate = (LATITUDE, LONGITUDE)
         geolocation = distance.distance(const_coordinate, student_coordinate).km
-        payload = {
-            'longitude': message.location.longitude,
-            'latitude': message.location.latitude,
-            'telegram_id': message.from_user.id,
-            'date': datetime.datetime.now().strftime('%d-%m-%Y'),
-            'distance': geolocation
-        }
-        await message.answer(f'{payload}')
+        add_student_attending(message.from_user.id, datetime.datetime.now().strftime('%d-%m-%Y'), geolocation)
+
+        await message.answer(f'Ваш результат: {answers_and_score[0] * 100}%\n')
     else:
         await message.answer('Геолокация не получена')
     await state.clear()

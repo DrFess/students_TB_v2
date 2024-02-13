@@ -103,9 +103,7 @@ def create_tables(cursor):
                                             date timestamp,
                                             distance INTEGER,
                                             FOREIGN KEY (telegram_id) REFERENCES (telegram_id) ON DELETE CASCADE
-                                            )
-        
-        """
+        )""",
     )
 
 

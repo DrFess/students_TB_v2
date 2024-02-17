@@ -27,17 +27,15 @@ async def start(message: Message):
 
 @router.message(Command(commands=['menu']))
 async def menu(message: Message, state: FSMContext):
-    builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text='Отправить геолокацию', callback_data='geo'))
-    await message.answer('Вы находитесь в главном меню', reply_markup=builder.as_markup())
+    await message.answer('Вы находитесь в главном меню. Бот находится в стадии разработки и все функции пока'
+                         ' не доступны. Ожидайте приглашения пройти тест')
     await state.clear()
 
 
 @router.message(F.text == f'\U0001F519 Вернуться в меню')
 async def menu(message: Message):
-    builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text='Отправить геолокацию', callback_data='geo'))
-    await message.answer('Вы находитесь в главном меню', reply_markup=builder.as_markup())
+    await message.answer('Вы находитесь в главном меню. Бот находится в стадии разработки и все функции пока'
+                         ' не доступны. Ожидайте приглашения пройти тест')
 
 
 @router.message(Command(commands=['id']))

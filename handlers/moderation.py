@@ -6,7 +6,8 @@ from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from database.db import add_teacher, add_student_group, show_all_student_group, check_teacher, show_all_teachers, \
-    delete_group, add_theme, show_all_themes, add_question
+    delete_group, add_theme, show_all_themes, add_question, edit_student_group, edit_student_name, edit_student_surname, \
+    edit_student_patronymic
 from keyboards import adding_answer, back_button
 
 router = Router()
@@ -40,6 +41,12 @@ class Question(StatesGroup):
     data_check = State()
 
 
+class EditStudentInfo(StatesGroup):
+    telegram_id = State()
+    info_params = State()
+    switch = State()
+
+
 @router.message(Command(commands=['moderate']))
 async def moderate_menu(message: Message):
     builder = InlineKeyboardBuilder()
@@ -50,6 +57,7 @@ async def moderate_menu(message: Message):
     builder.row(InlineKeyboardButton(text='Показать все группы', callback_data='all_groups'))
     builder.row(InlineKeyboardButton(text='Показать список преподавателей', callback_data='all_teachers'))
     builder.row(InlineKeyboardButton(text='Показать список тем', callback_data='all_themes'))
+    builder.row(InlineKeyboardButton(text='Редактировать данные студента', callback_data='edit_student_info'))
     await message.answer('Включен режим модерирования', reply_markup=builder.as_markup())
 
 
@@ -273,6 +281,51 @@ async def add_question_data(message: Message, state: FSMContext):
         await message.answer('Вопрос добавлен')
     elif message.text == 'Нет, не все данные верные.':
         await message.answer('Придётся начать всё заново')
+    else:
+        await message.answer('Что-то пошло не так', reply_markup=back_button)
+    await state.clear()
+
+
+@router.callback_query(F.data == 'edit_student_info')
+async def get_student_telegram_id(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer('Введите telegramID студента')
+    await state.set_state(EditStudentInfo.telegram_id)
+
+
+@router.message(EditStudentInfo.telegram_id)
+async def select_params_info(message: Message, state: FSMContext):
+    await state.update_data(telegram_id=message.text)
+    await state.set_state(EditStudentInfo.info_params)
+    builder = InlineKeyboardBuilder()
+    builder.row(InlineKeyboardButton(text='группу', callback_data='group'))
+    builder.row(InlineKeyboardButton(text='имя', callback_data='name'))
+    builder.row(InlineKeyboardButton(text='фамилию', callback_data='surname'))
+    builder.row(InlineKeyboardButton(text='отчество', callback_data='patronymic'))
+    await message.answer('Что изменить:', reply_markup=builder.as_markup())
+
+
+@router.callback_query(EditStudentInfo.info_params)
+async def get_new_info(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(switch=callback.data)
+    await callback.message.answer(f'Пришлите на какое значение изменить {callback.message.text}')
+    await state.set_state(EditStudentInfo.switch)
+
+
+@router.message(EditStudentInfo.switch)
+async def edit_student_info(message: Message, state: FSMContext):
+    data = await state.get_data()
+    if data.get('switch') == 'group':
+        edit_student_group(data.get('telegram_id', int(message.text)))
+        await message.answer('Группа изменена', reply_markup=back_button)
+    elif data.get('switch') == 'name':
+        edit_student_name('telegram_id', message.text)
+        await message.answer('Имя изменено', reply_markup=back_button)
+    elif data.get('switch') == 'surname':
+        edit_student_surname('telegram_id', message.text)
+        await message.answer('Фамилия изменена', reply_markup=back_button)
+    elif data.get('switch') == 'patronymic':
+        edit_student_patronymic('telegram_id', message.text)
+        await message.answer('Отчество изменено', reply_markup=back_button)
     else:
         await message.answer('Что-то пошло не так', reply_markup=back_button)
     await state.clear()

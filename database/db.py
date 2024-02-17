@@ -170,6 +170,35 @@ def check_student(cursor, telegram_id: int):
 
 
 @connection_to_DB
+def edit_student_group(cursor, student_id, data):
+    """Обновляет group_id студента"""
+    params = {data, student_id}
+    query = "UPDATE student SET group_id = ? WHERE telegram_id = ?;"
+    cursor.execute(query, params)
+
+
+@connection_to_DB
+def edit_student_name(cursor, student_id, data):
+    params = {data, student_id}
+    query = "UPDATE student SET name = ? WHERE telegram_id = ?;"
+    cursor.execute(query, params)
+
+
+@connection_to_DB
+def edit_student_surname(cursor, student_id, data):
+    params = {data, student_id}
+    query = "UPDATE student SET surname = ? WHERE telegram_id = ?;"
+    cursor.execute(query, params)
+
+
+@connection_to_DB
+def edit_student_patronymic(cursor, student_id, data):
+    params = {data, student_id}
+    query = "UPDATE student SET patronymic = ? WHERE telegram_id = ?;"
+    cursor.execute(query, params)
+
+
+@connection_to_DB
 def show_group_students(cursor, group_id: int):
     """Возвращает список telegram_id студентов группы"""
     students = cursor.execute('SELECT telegram_id FROM student WHERE group_id=?;', (group_id,)).fetchall()

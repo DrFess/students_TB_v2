@@ -11,7 +11,6 @@ from handlers import registration, moderation, create_db, geolocation, lessons
 from keyboards import registration_kb
 from settings import TOKEN
 
-logging.basicConfig(level=logging.INFO, filename='log.log')
 
 bot = Bot(token=TOKEN)
 router = Router()
@@ -58,4 +57,5 @@ async def main():
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(main())

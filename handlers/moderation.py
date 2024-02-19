@@ -317,16 +317,16 @@ async def get_new_info(callback: CallbackQuery, state: FSMContext):
 async def edit_student_info(message: Message, state: FSMContext):
     data = await state.get_data()
     if data.get('switch') == 'group_edit':
-        edit_student_group(data.get('telegram_id', int(message.text)))
+        edit_student_group(data.get('telegram_id'), int(message.text))
         await message.answer('Группа изменена', reply_markup=back_button)
     elif data.get('switch') == 'name_edit':
-        edit_student_name('telegram_id', message.text)
+        edit_student_name(data.get('telegram_id'), message.text)
         await message.answer('Имя изменено', reply_markup=back_button)
     elif data.get('switch') == 'surname_edit':
-        edit_student_surname('telegram_id', message.text)
+        edit_student_surname(data.get('telegram_id'), message.text)
         await message.answer('Фамилия изменена', reply_markup=back_button)
     elif data.get('switch') == 'patronymic_edit':
-        edit_student_patronymic('telegram_id', message.text)
+        edit_student_patronymic(data.get('telegram_id'), message.text)
         await message.answer('Отчество изменено', reply_markup=back_button)
     else:
         await message.answer('Что-то пошло не так', reply_markup=back_button)

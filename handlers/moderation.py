@@ -295,13 +295,13 @@ async def get_student_telegram_id(callback: CallbackQuery, state: FSMContext):
 @router.message(EditStudentInfo.telegram_id)
 async def select_params_info(message: Message, state: FSMContext):
     await state.update_data(telegram_id=message.text)
-    await state.set_state(EditStudentInfo.info_params)
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(text='группу', callback_data='group_edit'))
     builder.row(InlineKeyboardButton(text='имя', callback_data='name_edit'))
     builder.row(InlineKeyboardButton(text='фамилию', callback_data='surname_edit'))
     builder.row(InlineKeyboardButton(text='отчество', callback_data='patronymic_edit'))
     await message.answer('Что изменить:', reply_markup=builder.as_markup())
+    await state.set_state(EditStudentInfo.info_params)
 
 
 @router.callback_query(EditStudentInfo.info_params, F.data.in_(

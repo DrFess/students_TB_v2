@@ -304,7 +304,7 @@ async def select_params_info(message: Message, state: FSMContext):
     await message.answer('Что изменить:', reply_markup=builder.as_markup())
 
 
-@router.callback_query(EditStudentInfo.info_params)
+@router.callback_query(EditStudentInfo.info_params, F.data.in_({'group', 'name', 'surname', 'patronymic'}))
 async def get_new_info(callback: CallbackQuery, state: FSMContext):
     await state.update_data(switch=callback.data)
     await callback.message.answer(f'Пришлите на какое значение изменить {callback.message.text}')

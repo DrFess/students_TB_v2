@@ -22,7 +22,7 @@ class Testing(StatesGroup):
     geolocation = State()
 
 
-@router.callback_query(F.data.in_({'1', '2', '3', '4', '5', '6', '7', '8', '9'}))
+@router.callback_query(F.data.in_({str(x) for x in range(1, 12)}))
 async def start_testing(callback: CallbackQuery, state: FSMContext):
     await state.set_state(Testing.start)
     test_id = int(callback.data)

@@ -385,3 +385,21 @@ def add_student_attending(cursor, telegram_id, date, distance):
     query = """INSERT INTO attending_classes(telegram_id, date, distance) VALUES (?, ?, ?)"""
     data = (telegram_id, date, distance)
     cursor.execute(query, data)
+
+
+# @connection_to_DB
+# def show_attending_classes_per_date(cursor):
+#     """Показывает все записи по дистанции"""
+#     query = """SELECT * FROM attending_classes;"""
+#     result = {}
+#     result = cursor.execute(query, ).fetchone()
+#     # for item in cursor.execute(query, ).fetchall():
+#     #     result[item[0]] = item[1]
+#     return result
+#
+#
+# from datetime import datetime
+#
+#
+# need_date = datetime.strptime('17-02-2024', "%d-%m-%Y")
+# print(show_attending_classes_per_date())

@@ -8,7 +8,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from geopy import distance
 
 from database.db import show_questions_on_theme, add_student_answer, get_student_answer_and_score, \
-    check_answers_in_database, delete_answers, add_student_attending
+    check_answers_in_database, delete_answers, add_student_attending, show_all_questions
 from keyboards import info_geolocation, start_test, next_question, test_result
 from settings import LATITUDE, LONGITUDE
 
@@ -22,7 +22,7 @@ class Testing(StatesGroup):
     geolocation = State()
 
 
-@router.callback_query(F.data.in_({str(x) for x in range(1, 12)}))
+@router.callback_query(F.data.in_({str(x) for x in range(1, len(show_all_questions()) + 1)}))
 async def start_testing(callback: CallbackQuery, state: FSMContext):
     await state.set_state(Testing.start)
     test_id = int(callback.data)

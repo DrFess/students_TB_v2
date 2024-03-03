@@ -26,5 +26,5 @@ async def get_groups_list(message: Message, state:FSMContext):
 
 
 @router.callback_query(F.data.contains)
-async def show_all_data(callback:CallbackQuery, state:FSMContext):
+async def show_all_data(callback: CallbackQuery, state: FSMContext):
     pass

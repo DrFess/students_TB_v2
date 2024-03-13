@@ -6,7 +6,10 @@ from settings import PATH_TO_DB
 def connection_to_DB(func):
     """Декоратор - подключение к базе данных"""
     def wrapper(*args, **kwargs):
-        conn = sqlite3.connect(os.path.abspath(PATH_TO_DB), detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        conn = sqlite3.connect(
+            os.path.abspath(PATH_TO_DB),
+            detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
+        )
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -300,7 +303,7 @@ def show_all_questions(cursor):
 
 
 @connection_to_DB
-def show_questions_on_theme(cursor, theme_id):
+def show_questions_on_theme(cursor, theme_id: str) -> dict:
     """Получить все вопросы теста теме (
     [0] - id вопроса,
     [1] - текст вопроса,
@@ -387,19 +390,18 @@ def add_student_attending(cursor, telegram_id, date, distance):
     cursor.execute(query, data)
 
 
-# @connection_to_DB
-# def show_attending_classes_per_date(cursor):
-#     """Показывает все записи по дистанции"""
-#     query = """SELECT * FROM attending_classes;"""
-#     result = {}
-#     result = cursor.execute(query, ).fetchone()
-#     # for item in cursor.execute(query, ).fetchall():
-#     #     result[item[0]] = item[1]
-#     return result
-#
-#
+@connection_to_DB
+def show_attending_classes_per_date(cursor):
+    """Показывает все записи по дистанции"""
+    query = """SELECT * FROM attending_classes"""
+    result = cursor.execute(query,).fetchall()
+    return result
+
+
 # from datetime import datetime
 #
 #
 # need_date = datetime.strptime('17-02-2024', "%d-%m-%Y")
-# print(show_attending_classes_per_date())
+# print(need_date)
+# for item in show_attending_classes_per_date():
+#     print(item[2])

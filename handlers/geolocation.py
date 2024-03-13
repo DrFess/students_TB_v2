@@ -39,6 +39,23 @@ async def start_testing(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer('Тест загружен. Начать тест?', reply_markup=start_test)
 
 
+@router.callback_query(F.data.in_('first_final_test'))
+async def start_final_testing(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(Testing.start)
+    test = {}
+    for num in range(10):
+        add_dict = show_questions_on_theme(f'{num}')
+        for key in add_dict:
+            test[key] = add_dict[key]
+    await state.update_data(
+        telegram_id=callback.from_user.id,
+        test=test,
+        date=callback.message.date.today().strftime('%d-%m-%Y'),
+        count=0
+    )
+    await callback.message.answer('Тест загружен. Начать тест?', reply_markup=start_test)
+
+
 @router.message(Testing.start, (F.text == 'Начать тест') | (F.text == 'Следующий вопрос'))
 async def ask_question(message: Message, state: FSMContext):
     data = await state.get_data()

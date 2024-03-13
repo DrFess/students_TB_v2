@@ -42,6 +42,7 @@ async def theme_selection(callback: CallbackQuery, state: FSMContext):
     themes_dict = show_all_themes()
     for theme in themes_dict:
         builder.row(InlineKeyboardButton(text=theme, callback_data=f'{themes_dict[theme]}'))
+    builder.row(InlineKeyboardButton(text='Итоговый тест (1й семестр)', callback_data='first_final_test'))
     await callback.message.answer('Выбери тему занятия', reply_markup=builder.as_markup())
 
 

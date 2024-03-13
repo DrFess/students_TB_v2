@@ -21,7 +21,7 @@ class Lesson(StatesGroup):
     send_message = State()
 
 
-@router.message(Command(commands=['занятие']))
+@router.message(Command(commands=['lesson']))
 async def group_selection(message: Message, state: FSMContext):
     if check_teacher(message.from_user.id):
         await state.set_state(Lesson.choose_group)

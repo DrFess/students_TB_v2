@@ -43,7 +43,7 @@ async def start_testing(callback: CallbackQuery, state: FSMContext):
 async def start_final_testing(callback: CallbackQuery, state: FSMContext):
     await state.set_state(Testing.start)
     test = {}
-    for num in range(10):
+    for num in range(1, 10):
         add_dict = show_questions_on_theme(f'{num}')
         for key in add_dict:
             test[key] = add_dict[key]

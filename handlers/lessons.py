@@ -52,7 +52,10 @@ async def send_message_from_students(callback: CallbackQuery, state: FSMContext)
     group_id = data['group_id']
     group = show_student_group_title(group_id)
     theme_id = callback.data
-    theme = show_theme_title(theme_id)
+    if theme_id == 'first_final_test':
+        theme = 'Итоговый тест'
+    else:
+        theme = show_theme_title(theme_id)
     await state.update_data(theme_id=theme_id, group=group, theme=theme)
     await state.set_state(Lesson.send_message)
     await callback.message.answer(f'Отправить группе {group} тест по теме {theme}?', reply_markup=adding_answer)

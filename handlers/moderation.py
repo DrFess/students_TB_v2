@@ -58,6 +58,7 @@ async def moderate_menu(message: Message):
     builder.row(InlineKeyboardButton(text='Показать список преподавателей', callback_data='all_teachers'))
     builder.row(InlineKeyboardButton(text='Показать список тем', callback_data='all_themes'))
     builder.row(InlineKeyboardButton(text='Редактировать данные студента', callback_data='edit_student_info'))
+    builder.row(InlineKeyboardButton(text='Посещаемость', callback_data='attending_group_student'))
     await message.answer('Включен режим модерирования', reply_markup=builder.as_markup())
 
 

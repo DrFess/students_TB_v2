@@ -20,7 +20,7 @@ async def get_groups_list(message: Message, state:FSMContext):
     data = show_all_student_group()
     builder = InlineKeyboardBuilder()
     for group in data:
-        builder.row(InlineKeyboardButton(text=group, callback_data=f'{data[group]}r'))
+        builder.row(InlineKeyboardButton(text=group, callback_data=f'{data[group]}_result'))
     await message.answer('Выбери группу для просмотра результатов', reply_markup=builder.as_markup())
     await state.set_state(Results.group)
 

@@ -4,7 +4,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from database.db import check_teacher, show_all_student_group
+from database.db import check_teacher, show_all_student_group, show_group_students
 from keyboards import back_button
 
 router = Router()
@@ -29,5 +29,7 @@ async def choose_students_group(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(AttendingResult.choose_group, F.data.contains('_attend'))
 async def testing(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer('Выбранная группа: ' + callback.data.split('_')[0])
+    group_id = callback.data.split('_')[0]
+    students_telegram_id_in_group = show_group_students(group_id)
+    await callback.message.answer(f'{students_telegram_id_in_group}')
     await state.clear()

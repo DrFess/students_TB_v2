@@ -24,7 +24,7 @@ def connection_to_DB(func):
 
 
 def connection_to_DB_without_datetype(func):
-    """Декоратор - подключение к базе данных"""
+    """Декоратор - подключение к базе данных без настроек типов"""
     def wrapper(*args, **kwargs):
         conn = sqlite3.connect(
             os.path.abspath(PATH_TO_DB)
@@ -417,10 +417,5 @@ def show_attending_classes_per_date(cursor):
     return result
 
 
-from datetime import datetime
-
-
-# need_date = datetime.strptime('17-02-2024', "%d-%m-%Y")
-# print(need_date)
 for item in show_attending_classes_per_date():
     print(item[3])

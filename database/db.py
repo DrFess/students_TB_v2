@@ -184,6 +184,15 @@ def add_student(cursor, telegram_id: int, surname: str, name: str, patronymic: s
 
 
 @connection_to_DB
+def show_student_info_by_telegram_id(cursor, telegram_id: int):
+    """Получить данные студента по telegram_id"""
+    query = """SELECT * FROM student WHERE telegram_id=?;"""
+    student = cursor.execute(query, (telegram_id,)).fetchone()
+    result = f'{student[2]} {student[3]} {student[4]}'
+    return result
+
+
+@connection_to_DB
 def check_student(cursor, telegram_id: int):
     """Проверка наличия студента в базе данных"""
     if cursor.execute('SELECT * FROM student WHERE telegram_id=?;', (telegram_id,)).fetchone():
@@ -228,6 +237,14 @@ def show_group_students(cursor, group_id: int):
     for student in students:
         students_list.append(student[0])
     return students_list
+
+
+@connection_to_DB
+def show_group_in_which_student(cursor, telegram_id: int):
+    """Возвращает номер группы в которой учится студент"""
+    query = """SELECT group_id FROM student WHERE telegram_id=?;"""
+    result = cursor.execute(query, (telegram_id,)).fetchone()[0]
+    return result
 
 
 @connection_to_DB
@@ -350,6 +367,14 @@ def add_lesson(cursor, date, theme_id, who_was, who_taught_lesson):
         ) VALUES (?, ?, ?, ?)""", data)
 
 
+@connection_to_DB_without_datetype
+def show_dates_and_themes(cursor, group):
+    """Показывает все даты и темы занятий"""
+    query = """SELECT date, theme_id FROM lesson WHERE who_was=?;"""
+    lessons = cursor.execute(query, (group,)).fetchall()
+    return lessons
+
+
 @connection_to_DB
 def add_student_answer(cursor, data):
     """Добавляет запись об ответе студента"""
@@ -410,12 +435,22 @@ def add_student_attending(cursor, telegram_id, date, distance):
 
 
 @connection_to_DB_without_datetype
-def show_attending_classes_per_date(cursor):
+def show_attending_classes(cursor):
     """Показывает все записи по дистанции"""
     query = """SELECT * FROM attending_classes"""
     result = cursor.execute(query,).fetchall()
     return result
 
 
-for item in show_attending_classes_per_date():
-    print(item[3])
+@connection_to_DB_without_datetype
+def show_attending_classes_telegram_id(cursor, telegram_id):
+    """Показывает все записи дистанции по telegram_id"""
+    query = """SELECT * FROM attending_classes WHERE telegram_id=?"""
+    result = cursor.execute(query, (telegram_id,)).fetchall()
+    answer = {}
+    for item in result:
+        answer[item[2]] = {
+            'distance': round(item[3], 3)
+        }
+    return answer
+

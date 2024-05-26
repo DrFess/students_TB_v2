@@ -19,3 +19,5 @@ setuptools==65.5.1
 typing-extensions==4.9.0
 wheel==0.38.4
 yarl==1.9.4
+requests==2.31.0
+beautifulsoup4==4.12.3

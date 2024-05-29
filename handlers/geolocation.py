@@ -159,7 +159,7 @@ async def write_location(message: Message, state: FSMContext):
         geolocation = distance.distance(const_coordinate, student_coordinate).km
         add_student_attending(message.from_user.id, datetime.datetime.now().strftime('%d-%m-%Y'), geolocation)
 
-        if answers_and_score < 1:
+        if answers_and_score[0] < 1:
             errors = ''
             for item in answers_and_score[1]:
                 if '-' in item:

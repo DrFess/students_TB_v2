@@ -165,7 +165,7 @@ async def write_location(message: Message, state: FSMContext):
                 if '-' in item:
                     errors += f'{answers_and_score[1].index(item) + 1}'
             await message.answer(f'Ваш результат: {answers_and_score[0] * 100}%\n'
-                                 f'Ошибки в: {errors}')
+                                 f'Ошибки в вопросах: {errors}')
         else:
             await message.answer(f'Ваш результат: {answers_and_score[0] * 100}%\n')
         await state.clear()
